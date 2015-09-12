@@ -21,7 +21,7 @@ Pseudo-asynchronous steam
 -------------------------
 
 	fs.createReadStream('gear.stl')
-		.pipe(new STLParser.Transform())
+		.pipe(new STLParser.ParseStream())
 		.on('format', function (format) {
 		})
 		.on('header', function (header) {
@@ -63,3 +63,14 @@ Result formats
    For binary format, each triangle also contains an `attr` property containing
    a 16-bit integer value which has no standardized meaning.
 
+Notes
+-----
+
+The parser strictly enforces syntax, and disallows unfamiliar tokens.  It does
+*not* however perform any validation on the geometry data, including:
+
+ * Winding direction of vertices
+
+ * Normal agreeing with direction implied by vertices
+
+ * Positive values only for vector entries

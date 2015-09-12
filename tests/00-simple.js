@@ -29,7 +29,7 @@ describe('ASCII engine', function () {
 	it('Parses simple file via stream correctly', function (done) {
 		var stl = { triangles: [] };
 		fs.createReadStream(path.join(__dirname, 'simple.stl'))
-			.pipe(new STLParser.Transform())
+			.pipe(new STLParser.ParseStream())
 			.on('format', function (format) {
 				stl.format = format;
 			})

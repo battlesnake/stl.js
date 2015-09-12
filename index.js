@@ -1,6 +1,6 @@
 'use strict';
 
 module.exports = {
-	Transform: require('./transform'),
-	parse: require('./parse')
+	ParseStream: require('./parser/transform'),
+	parse: require('./parser/parse')
 };
