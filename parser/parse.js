@@ -2,10 +2,13 @@
 
 var getFormat = require('./get-format');
 var engines = require('./engines');
+var validateTriangle = require('../validate-triangle');
 
 module.exports = parse;
 
-function parse(stl) {
+function parse(stl, options) {
+	options = options || {};
+	var strict = !options.lax;
 	if (typeof stl === 'string') {
 		stl = new Buffer(stl);
 	}
@@ -13,7 +16,7 @@ function parse(stl) {
 	if (!format) {
 		throw new Error('Could not determine format of STL');
 	}
-	var engine = new engines[format]();
+	var engine = new engines[format]({ strict: strict });
 	engine.write(stl);
 	if (format === 'ascii') {
 		engine.write(new Buffer('\n'));
@@ -29,6 +32,9 @@ function parse(stl) {
 		if (triangle === true) {
 			continue;
 		}
+		if (strict) {
+			validateTriangle(triangle);
+		}
 		triangles.push(triangle);
 	}
 	if (!engine.done) {
@@ -40,4 +46,3 @@ function parse(stl) {
 		triangles: triangles
 	};
 }
-

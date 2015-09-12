@@ -2,9 +2,10 @@
 
 module.exports = Line;
 
-function Line(number, str) {
+function Line(number, str, strict) {
+	this.strict = strict;
 	this.number = number;
-	this.tokens = str.trim().toLowerCase().split(' ');
+	this.tokens = str.trim().toLowerCase().split(strict ? ' ' : /\s/);
 	this.line = this.tokens.join(' ');
 	this.token = 0;
 	this.parseError = parseError;
@@ -23,7 +24,7 @@ Line.prototype = {
 };
 
 function assertEnd() {
-	if (this.token !== this.tokens.length) {
+	if (this.strict && this.token !== this.tokens.length) {
 		throw this.parseError('Expected end of line but found more data');
 	}
 }
@@ -49,10 +50,12 @@ function getRest() {
 	return this.tokens.slice(index).join(' ');
 }
 
+var floatRx = /^[+-]?(\d+(\.\d+)?|\d(\.\d+)?[eE][-+]\d+)$/;
+
 function getFloat() {
 	var token = this.getToken();
 	var value = parseFloat(token);
-	if (isNaN(value)) {
+	if (isNaN(value) || (this.strict && !floatRx.test(token))) {
 		throw this.parseError('Expected value of type "number" but found expression "' + token + '"');
 	}
 	return value;

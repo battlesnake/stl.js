@@ -9,7 +9,7 @@ Synchronous immediate
 ---------------------
 
 	var data = fs.readFileSync('gear.stl');
-	var stl = STLParser.parse(data);
+	var stl = STLParser.parse(data [, options] );
 
 	stl = {
 		format: ...,
@@ -21,7 +21,7 @@ Pseudo-asynchronous steam
 -------------------------
 
 	fs.createReadStream('gear.stl')
-		.pipe(new STLParser.ParseStream())
+		.pipe(new STLParser.ParseStream( [options] ))
 		.on('format', function (format) {
 		})
 		.on('header', function (header) {
@@ -73,4 +73,14 @@ The parser strictly enforces syntax, and disallows unfamiliar tokens.  It does
 
  * Normal agreeing with direction implied by vertices
 
- * Positive values only for vector entries
+Some parse errors can be disabled by setting `lax: true` in the parser options.
+With `lax` mode enabled, the following deviations from the standard are
+permitted:
+
+ * Non-positive values are permitted in vertex vectors
+
+ * Tabs may also be used as whitespace in ASCII format
+
+ * Garbage at end of lines is ignored
+
+ * `name` after `endsolid` does not have to match name after `solid`

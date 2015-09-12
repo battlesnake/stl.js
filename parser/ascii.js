@@ -4,7 +4,8 @@ var Line = require('./line');
 
 module.exports = AsciiEngine;
 
-function AsciiEngine() {
+function AsciiEngine(options) {
+	options = options || {};
 	this.name = null;
 	this.buffer = null;
 	this.lineStart = 0;
@@ -13,6 +14,7 @@ function AsciiEngine() {
 	this.linesBuffer = [];
 	this.linesRead = 0;
 	this.isEnding = false;
+	this.strict = options.strict || false;
 }
 
 AsciiEngine.prototype = {
@@ -65,7 +67,7 @@ function getAsciiTriangle() {
 		var name = next
 			.assertToken('endsolid')
 			.getRest();
-		if (name !== '' && name !== this.name) {
+		if (this.strict && name !== '' && name !== this.name) {
 			throw new Error('Solid name "' + name + '" at end of solid does not match solid name "' + this.name + '" at start of solid');
 		}
 		this.done = true;
@@ -136,7 +138,7 @@ function getNextLine() {
 				}
 				this.lineStart = 0;
 				this.lineScanFrom = 0;
-				return new Line(++this.linesRead, line);
+				return new Line(++this.linesRead, line, this.strict);
 			}
 		}
 	}

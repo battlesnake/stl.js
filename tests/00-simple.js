@@ -14,8 +14,8 @@ describe('ASCII engine', function () {
 		header: { name: 'simple' },
 		triangles: [
 			{
-				normal: [0, 0, 0],
-				vertices: [[0, 0, 0], [1, 0, 0], [1, 2.125, 3e+4]]
+				normal: [0, 1, 0],
+				vertices: [[1, 5, 1], [3, 6, 3.625e-2], [1, 2.0375, 3e+4]]
 			},
 		]
 	};
@@ -39,7 +39,7 @@ describe('ASCII engine', function () {
 			.on('data', function (triangle) {
 				stl.triangles.push(triangle);
 			})
-			.on('end', function () {
+			.on('finish', function () {
 				expect(stl).to.deep.equal(expected);
 				done();
 			});

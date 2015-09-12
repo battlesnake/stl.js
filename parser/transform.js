@@ -7,16 +7,22 @@ module.exports = STLParser;
 
 var getFormat = require('./get-format');
 var engines = require('./engines');
+var validateTriangle = require('../validate-triangle');
 
-function STLParser() {
+function STLParser(options) {
 	if (!(this instanceof STLParser)) {
-		return new STLParser();
+		return new STLParser(options);
 	}
-	Transform.call(this, { objectMode: true, highWaterMark: 1024 });
+	options = Object.create(options || {});
+	options.objectMode = true;
+	options.lax = options.lax || false;
+	options.highWaterMark = options.highWaterMark || 1024;
+	Transform.call(this, options);
 	this.__buffer = null;
 	this.__engine = null;
 	this.__hasHeader = false;
 	this.__doTransform = doTransform;
+	this.__lax = options.lax;
 }
 
 util.inherits(STLParser, Transform);
@@ -60,7 +66,7 @@ function doTransform(chunk) {
 			return;
 		}
 		this.__buffer = null;
-		this.__engine = new engines[format]();
+		this.__engine = new engines[format]({ strict: !this.__lax });
 		this.emit('format', format);
 	}
 	var engine = this.__engine;
@@ -79,6 +85,9 @@ function doTransform(chunk) {
 	while ((triangle = engine.readTriangle())) {
 		if (triangle === true) {
 			continue;
+		}
+		if (!this.__lax) {
+			validateTriangle(triangle);
 		}
 		this.push(triangle);
 	}
