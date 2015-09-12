@@ -4,7 +4,7 @@ module.exports = Line;
 
 function Line(number, str) {
 	this.number = number;
-	this.tokens = str.trim().toLowerCase().split(/\s+/);
+	this.tokens = str.trim().toLowerCase().split(' ');
 	this.line = this.tokens.join(' ');
 	this.token = 0;
 	this.parseError = parseError;
