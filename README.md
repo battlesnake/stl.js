@@ -1,9 +1,12 @@
 Simple STL utils
 ================
 
-Currently, just an STL parser.  It handles the most popular ASCII and binary
-formats.  It can process an entire buffer synchronously, or process a stream
-on-the-fly.
+Currently, just an STL parser and writer.  It handles the most popular ASCII and
+binary formats.  It can read an entire buffer synchronously, or read a stream
+on-the-fly.  It writes via a transform stream.
+
+Reading
+=======
 
 Synchronous immediate
 ---------------------
@@ -84,3 +87,18 @@ permitted:
  * Garbage at end of lines is ignored
 
  * `name` after `endsolid` does not have to match name after `solid`
+
+Writing
+=======
+
+The writer is a transform stream:
+
+	/* AsciiWriter requires solid name and triangle count */
+	var writer = new STL.AsciiWriter('name', numTriangles);
+
+	/* BinaryWriter requires header buffer/string and triangle count */
+	var writer = new STL.BinaryWriter(null, numTriangles);
+
+	/* Either/both of the following may be used */
+	writer.write(individualTriangle);
+	writer.write(arrayOfTriangles);
