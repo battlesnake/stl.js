@@ -25,8 +25,7 @@ describe('ASCII engine', function () {
 		expect(function () { STLParser.parse(data); }).to.not.throw();
 	});
 
-	it('Parses stream', function (done) {
-		this.timeout(10000);
+	it('Parses gear via stream', function (done) {
 		fs.createReadStream(path.join(__dirname, 'gear.stl'))
 			.pipe(new STLParser.Transform())
 			.on('data', function (b) {})

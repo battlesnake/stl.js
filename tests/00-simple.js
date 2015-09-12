@@ -26,7 +26,7 @@ describe('ASCII engine', function () {
 		expect(stl).to.deep.equal(expected);
 	});
 
-	it('Parses stream correctly', function (done) {
+	it('Parses simple file via stream correctly', function (done) {
 		var stl = { triangles: [] };
 		fs.createReadStream(path.join(__dirname, 'simple.stl'))
 			.pipe(new STLParser.Transform())
@@ -45,6 +45,4 @@ describe('ASCII engine', function () {
 			});
 	});
 
-//fs.createReadStream(path.join(__dirname, 'gear.stl'))
-//	.pipe(new STLParser());
 });
