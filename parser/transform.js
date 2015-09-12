@@ -8,6 +8,7 @@ module.exports = STLParser;
 var getFormat = require('./get-format');
 var engines = require('./engines');
 var validateTriangle = require('../validate-triangle');
+var combiner = require('./combiner');
 
 function STLParser(options) {
 	if (!(this instanceof STLParser)) {
@@ -29,6 +30,11 @@ util.inherits(STLParser, Transform);
 
 STLParser.prototype._transform = stlTransform;
 STLParser.prototype._flush = stlFlush;
+STLParser.prototype.construct = stlConstruct;
+
+function stlConstruct() {
+	return combiner(this);
+}
 
 function stlTransform(chunk, encoding, done) {
 	this.__doTransform(chunk);

@@ -7,7 +7,7 @@ var expect = chai.expect;
 describe('ASCII engine', function () {
 	var fs = require('fs');
 	var path = require('path');
-	var STLParser = require('../');
+	var STL = require('../');
 
 	var expected = {
 		format: 'ascii',
@@ -22,14 +22,14 @@ describe('ASCII engine', function () {
 
 	it('Parses simple file correctly', function () {
 		var data = fs.readFileSync(path.join(__dirname, 'simple.stl'));
-		var stl = STLParser.parse(data);
+		var stl = STL.parse(data);
 		expect(stl).to.deep.equal(expected);
 	});
 
 	it('Parses simple file via stream correctly', function (done) {
 		var stl = { triangles: [] };
 		fs.createReadStream(path.join(__dirname, 'simple.stl'))
-			.pipe(new STLParser.ParseStream())
+			.pipe(new STL.ParseStream())
 			.on('format', function (format) {
 				stl.format = format;
 			})
@@ -43,6 +43,24 @@ describe('ASCII engine', function () {
 				expect(stl).to.deep.equal(expected);
 				done();
 			});
+	});
+
+	it('Writes ascii format correctly', function (done) {
+		var writer = new STL.AsciiWriter(expected.header.name, expected.triangles.length);
+		var written = [];
+		writer
+			.on('data', function (buf) {
+				written.push(buf);
+			})
+			.on('error', done)
+			.on('finish', function () {
+				written = Buffer.concat(written);
+				var parsed = STL.parse(written);
+				expect(parsed).to.deep.equal(expected);
+				done();
+			});
+		writer.write(expected.triangles);
+		writer.end();
 	});
 
 });

@@ -1,6 +1,6 @@
 {
   "name": "stl.js",
-  "version": "0.0.3",
+  "version": "0.0.5",
   "description": "STL-format library",
   "main": "index.js",
   "scripts": {

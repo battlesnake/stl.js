@@ -1,9 +1,12 @@
 Simple STL utils
 ================
 
-Currently, just an STL parser.  It handles the most popular ASCII and binary
-formats.  It can process an entire buffer synchronously, or process a stream
-on-the-fly.
+Currently, just an STL parser and writer.  It handles the most popular ASCII and
+binary formats.  It can read an entire buffer synchronously, or read a stream
+on-the-fly.  It writes via a transform stream.
+
+Reading
+=======
 
 Synchronous immediate
 ---------------------
@@ -35,6 +38,20 @@ I called this "pseudo" asynchronous because the actual parsing is done by JS
 code, so is blocking and synchronous.  The stream wrapper provides an
 asynchronous transform-stream interface around the parser, allowing sockets and
 files to be easily streamed through the parser.
+
+If you're reading from a stream, but want the entire STL object, the transform
+stream has a `construct` method which will stream in the entire model and give
+a single result in the same format as the non-streaming method:
+
+	fs.createReadStream('gear.stl')
+		.pipe(new STL.ParseStream())
+		.construct()
+		.on('data', function (chunk) {
+			/* Callback only called once */
+			/* chunk is entire STL model in same format that STLParser returns */
+		})
+		.on('finish', function () {
+		});
 
 Result formats
 --------------
@@ -84,3 +101,35 @@ permitted:
  * Garbage at end of lines is ignored
 
  * `name` after `endsolid` does not have to match name after `solid`
+
+Writing
+=======
+
+Streaming
+---------
+
+The writer is a transform stream.  Initialize it with header data and triangle
+count, then stream the triangles in:
+
+	/* AsciiWriter requires solid name and triangle count */
+	var writer = new STL.AsciiWriter('name', numTriangles);
+
+	/* BinaryWriter requires header buffer/string and triangle count */
+	var writer = new STL.BinaryWriter(null, numTriangles);
+
+	/* Either/both of the following may be called multiple times */
+	writer.write(individualTriangle);
+	writer.write(arrayOfTriangles);
+
+All at once
+-----------
+
+When initialized without header data, then writer will accept the entire STL
+object (including headers) in one call to `write`:
+
+	/* No parameters */
+	var writer = new STL.AsciiWriter();
+
+	/* One write call, with the entire STL object */
+	writer.write(parsedStlObject);
+		.pipe(...);

@@ -49,7 +49,7 @@ function read(count) {
 		result = this.buffer;
 		this.buffer = null;
 	} else {
-		result = this.buffer.slice(0, count - 1);
+		result = this.buffer.slice(0, count);
 		this.buffer = this.buffer.slice(count);
 	}
 	return result;
